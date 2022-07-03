@@ -1,14 +1,16 @@
 const express = require("express");
 const bodyParser = require('body-parser');
-const helper = require('helper');
+const morgan = require('morgan');
+const helper = require('./helper');
 const app = express();
-const PORT = 3000;
+const PORT = 8000;
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(morgan("combined"));
 
 app.use("/",require("./routes/auth"));
-app.use('/profile', helper.verify, require('routes/profile'))
+app.use('/profile', helper.verifyJWT, require('./routes/profile'))
 
 
 app.use((req, res) => {
@@ -20,7 +22,9 @@ app.use((err, req, res, next) => {
 	else return helper.sendError(res, err.err_message || err, err.err_code);
 });
 
-app.listen(PORT,(error)=>{
-    console.log(`Listening at port ${PORT}`);
-})
+module.exports = { app };
+
+// app.listen(PORT,(error)=>{
+//     console.log(`Listening at port ${PORT}`);
+// })
 

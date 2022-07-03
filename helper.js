@@ -10,7 +10,7 @@ genJWT = (data, secret = JWT_SECRET) => {
 verifyJWT = (req, res, next) => {	
 	baseUrl = req.baseUrl.split("/").reverse()[0];
     auth_token = req.headers["x-token"] || "";
-	if (!auth_token) return helper.sendError(res, "AuthRTqentication token not provided!", 401);
+	if (!auth_token) return sendError(res, "Authentication token not provided!", 401);
 	jwt.verify(auth_token, JWT_SECRET, (err, data) => {
 		if (err) {
 			if (err.name === "TokenExpiredError") throw { err_message: "Authentication token expired!", err_code: 401 };

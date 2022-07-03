@@ -1,9 +1,11 @@
 const router = require("express").Router();
-let { users } = require("users");
+const helper = require("../helper");
+let { users } = require("../users");
 
 router.get('/', (req, res, next) => {
+    const user = users[req.email];
     try {
-        res.json(profile);
+        helper.sendSuccess(res, user)
     }
     catch (err){
         next(err);
@@ -30,6 +32,7 @@ router.post('/', (req, res, next) => {
             throw { err_message: "Invalid zipcode", err_code: 406}
 
         users[email] = {
+            email,
             fullName,
             address1,
             address2,
