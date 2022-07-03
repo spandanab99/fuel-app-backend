@@ -9,7 +9,6 @@ app.use(bodyParser.json())
 
 app.use("/",require("./routes/login"));
 
-
 app.listen(PORT,(error)=>{
     console.log(`Listening at port ${PORT}`);
 })
