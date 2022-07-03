@@ -7,11 +7,9 @@ const PORT = 3000;
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
+app.use("/",require("./routes/auth"));
 app.use('/profile', helper.verify, require('routes/profile'))
 
-app.get("/",(req,res)=>{
-    res.send("Hello World!!");
-})
 
 app.use((req, res) => {
 	throw { err_message: "Route not found!", err_code: 404 };
