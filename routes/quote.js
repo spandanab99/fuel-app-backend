@@ -1,23 +1,24 @@
 const router = require("express").Router();
 const { v4: uuidv4 } = require('uuid');
-let { users } = require("users");
+const helper = require("../helper");
+let { users } = require("../users");
 
 const suggestedPrice = 10;
 
-router.get("/list", (req, res, next) => {
+router.get("/history", (req, res, next) => {
     try {
         const user = users[req.email];
-        helper.sendSuccess(res, user[quotes]);
+        helper.sendSuccess(res, user.quotes);
     }
     catch (err){
         next(err)
     }
 })
 
-router.post("/get", (req, res, next) => {
+router.get("/", (req, res, next) => {
     try {
         const user = users[req.email];
-        const id = req.params.id;
+        const id = req.query.id;
         if (!id)
             throw { err_message: "Provide an Id", err_code: 401 }
             
@@ -30,20 +31,22 @@ router.post("/get", (req, res, next) => {
     }
 })
 
-router.post('/add', (req, res, next) => {
+router.post('/', (req, res, next) => {
     try {
         const user = users[req.email];
         const id = uuidv4();
         
         let { requestedGallons, deliveryDate } = req.body;
-        if (!(gallons && date))
+        if (!(requestedGallons && deliveryDate))
             throw { err_message: "Provide required fields", err_code: 401 }
 
         // add validations to gallons and date
-        deliveryAddress = user.profile.address1
-        totalDue = suggestedPrice * gallons
+        deliveryAddress = user.address1
+        totalDue = suggestedPrice * requestedGallons;
 
+        user.quotes = {}
         user.quotes[id] = {
+            id,
             requestedGallons,
             deliveryAddress,
             deliveryDate,
@@ -51,7 +54,7 @@ router.post('/add', (req, res, next) => {
             totalDue,
         }
 
-        helper.sendSuccess(res, user.quotes.id)
+        helper.sendSuccess(res, user.quotes[id])
 
     } catch (error) {
         next(error)

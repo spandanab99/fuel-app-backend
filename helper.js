@@ -28,6 +28,7 @@ sendError = (res, err, resCode) => {
 	resCode = resCode || 500;
 	req = res.req;
 	err_message = { code: resCode || 500, message: err };
+	console.log(err)
 	if (typeof err !== "string") err = "Internal server error!";
 	let message = {
 		code: resCode,

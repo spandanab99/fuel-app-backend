@@ -11,6 +11,7 @@ app.use(morgan("combined"));
 
 app.use("/",require("./routes/auth"));
 app.use('/profile', helper.verifyJWT, require('./routes/profile'))
+app.use('/quote', helper.verifyJWT, require('./routes/quote'))
 
 
 app.use((req, res) => {

@@ -16,7 +16,7 @@ router.post('/', (req, res, next) => {
     try {
  
         const email = req.email;
-        let {
+        let {   
             fullName,
             address1,
             address2,
@@ -28,20 +28,20 @@ router.post('/', (req, res, next) => {
         if (!(fullName && address1 && city && state && zipcode))
             throw { err_message: "Provide required fields", err_code: 406 }
 
-        if (!zipcode.match(/[0-9]{5-9}/))
+        if (!(zipcode.match(/^[0-9]{5}$/)))
             throw { err_message: "Invalid zipcode", err_code: 406}
 
         users[email] = {
-            email,
+            ...users[email],
             fullName,
             address1,
             address2,
             city,
             state,
-            zipcode
+            zipcode,
         }
 
-        helper.sendSuccess(res, "Profile added");
+        helper.sendSuccess(res, users[email]);
     }
     catch (err){
         next(err);
@@ -73,10 +73,11 @@ router.patch('/', (req, res, next) => {
         if (state)
             profile.state = state;
         if (zipcode){
-            if (!zipcode.match(/[0-9]{5-9}/))
+            if (!zipcode.match(/^[0-9]{5}$/))
                 throw { err_message: "Invalid zipcode", err_code: 406 }
             profile.zipcode = zipcode;
         }
+        helper.sendSuccess(res, profile)
     }
     catch (err){
         next(err);
