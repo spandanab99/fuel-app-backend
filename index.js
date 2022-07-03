@@ -22,9 +22,8 @@ app.use((err, req, res, next) => {
 	else return helper.sendError(res, err.err_message || err, err.err_code);
 });
 
-module.exports = { app };
+const server = app.listen(PORT,(error)=>{
+    console.log(`Listening at port ${PORT}`);
+})
 
-// app.listen(PORT,(error)=>{
-//     console.log(`Listening at port ${PORT}`);
-// })
-
+module.exports = { app, server };
