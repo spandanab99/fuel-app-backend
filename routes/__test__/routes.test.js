@@ -6,10 +6,6 @@ let token = ""
 
 describe('Fuel API', function() {
 
-    // const server = app.listen(PORT,(error)=>{
-    //     console.log(`Listening at port ${PORT}`);
-    // })
-
     afterAll(done => {
         server.close();
         done();
