@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const cors  = require('cors');
 const helper = require('./helper');
 const app = express();
 const PORT = 8000;
@@ -8,6 +9,8 @@ const PORT = 8000;
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(morgan("combined"));
+app.use(cors());
+
 
 app.use("/",require("./routes/auth"));
 app.use('/profile', helper.verifyJWT, require('./routes/profile'))
