@@ -40,7 +40,9 @@ router.post('/', (req, res, next) => {
         if (!(requestedGallons && deliveryDate))
             throw { err_message: "Provide required fields", err_code: 401 }
 
-        // add validations to gallons and date
+        if (typeof requestedGallons !== 'number')
+            throw { err_message: "Invalid requested gallons", err_code: 401 }
+
         deliveryAddress = user.address1
         totalDue = suggestedPrice * requestedGallons;
 
