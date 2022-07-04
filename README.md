@@ -9,7 +9,7 @@ In the project directory, you can run:
 
 Install all the dependencies needed for the application
 
-### `node index.js`
+### `npm start`
 
 Runs the backend server at [http://localhost:8000](http://localhost:8000)
 
