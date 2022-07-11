@@ -28,7 +28,7 @@ router.post('/', (req, res, next) => {
         if (!(fullName && address1 && city && state && zipcode))
             throw { err_message: "Provide required fields", err_code: 406 }
 
-        if (!(zipcode.match(/^[0-9]{5}$/)))
+        if (!(zipcode.match(/(^\d{5}$)|(^\d{5}-\d{4}$)/)))
             throw { err_message: "Invalid zipcode", err_code: 406}
 
         users[email] = {
