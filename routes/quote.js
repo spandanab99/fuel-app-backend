@@ -33,6 +33,7 @@ router.get("/", (req, res, next) => {
 
 router.post('/', (req, res, next) => {
     try {
+        console.log(req.body);
         const user = users[req.email];
         const id = uuidv4();
         
