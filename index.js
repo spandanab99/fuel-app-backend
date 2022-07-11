@@ -16,11 +16,12 @@ app.use("/",require("./routes/auth"));
 app.use('/profile', helper.verifyJWT, require('./routes/profile'))
 app.use('/quote', helper.verifyJWT, require('./routes/quote'))
 
-
+/* istanbul ignore next */
 app.use((req, res) => {
 	throw { err_message: "Route not found!", err_code: 404 };
 });
 
+/* istanbul ignore next */
 app.use((err, req, res, next) => {
 	if (err instanceof SyntaxError) return helper.sendError(res, "JSON parse error!", 400);
 	else return helper.sendError(res, err.err_message || err, err.err_code);

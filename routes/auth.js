@@ -4,6 +4,7 @@ const router = express.Router();
 const helper = require("../helper");
 const { users } = require("../users");
 
+/* istanbul ignore next */
 router.post("/register", async (req, res, next) => {
     try {
         var { email, password } = req.body;
@@ -21,6 +22,7 @@ router.post("/register", async (req, res, next) => {
     }
 });
 
+/* istanbul ignore next */
 router.post("/login", async (req, res, next) => {
     try {
         const { email, password } = req.body;

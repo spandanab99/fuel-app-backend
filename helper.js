@@ -7,6 +7,7 @@ genJWT = (data, secret = JWT_SECRET) => {
 	});
 };
 
+/* istanbul ignore next */
 verifyJWT = (req, res, next) => {	
 	baseUrl = req.baseUrl.split("/").reverse()[0];
     auth_token = req.headers["x-token"] || "";
@@ -23,6 +24,7 @@ verifyJWT = (req, res, next) => {
 	});
 };
 
+/* istanbul ignore next */
 sendError = (res, err, resCode) => {
 	err = err || "Internal server error";
 	resCode = resCode || 500;
