@@ -12,6 +12,7 @@ router.get('/', (req, res, next) => {
     }
 })
 
+/* istanbul ignore next */
 router.post('/', (req, res, next) => {
     try {
  
@@ -48,6 +49,7 @@ router.post('/', (req, res, next) => {
     }
 })
 
+/* istanbul ignore next */
 router.patch('/', (req, res, next) => {
     try {
         

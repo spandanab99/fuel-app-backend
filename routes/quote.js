@@ -15,6 +15,7 @@ router.get("/history", (req, res, next) => {
     }
 })
 
+/* istanbul ignore next */
 router.get("/", (req, res, next) => {
     try {
         const user = users[req.email];
@@ -31,6 +32,7 @@ router.get("/", (req, res, next) => {
     }
 })
 
+/* istanbul ignore next */
 router.post('/', (req, res, next) => {
     try {
         console.log(req.body);
