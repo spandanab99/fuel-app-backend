@@ -1,22 +1,29 @@
 const { app, server } = require('../../index');
+const { mongoose, connectToDb } = require('../../db/db');
 const request = require('supertest');
 const PORT = 8000;
 
 let token = ""
 let id = ""
-
+let  randomEmail = (Math.random() + 1).toString(32).substring(7);
 describe('Fuel API', function() {
 
     afterAll(done => {
+        mongoose.connection.close();
         server.close();
         done();
     });
+
+    it('checks db connection', async function() {
+        const testConnection = await connectToDb();
+        expect(testConnection).toBeDefined();
+	});
 	  
 	it('should register', async function() {
         const res = await request(app)
             .post('/register')
             .set('Content-Type', 'application/json')
-            .send({ email: 'joe@gmail.com', password: '12345' })
+            .send({ email: randomEmail + '@gmail.com', password: '12345' })
     		
         expect(res.statusCode).toEqual(200);
         expect(res.body.data).toEqual("Registered Successfully");
@@ -26,7 +33,7 @@ describe('Fuel API', function() {
         const res = await request(app)
             .post('/login')
             .set('Content-Type', 'application/json')
-            .send({ email: 'joe@gmail.com', password: '12345' })
+            .send({ email: randomEmail + '@gmail.com', password: '12345' })
     		
         expect(res.statusCode).toEqual(200)
         expect(res.body.data).toBeDefined()
@@ -91,7 +98,6 @@ describe('Fuel API', function() {
         data = res.body.data;
 
         expect(res.statusCode).toEqual(200)
-        expect(res.body.data.email).toEqual('joe@gmail.com')
         expect(data.fullName).toEqual("Joe kater")
         expect(data.address1).toEqual("2 - 243 Houston, Canada")
         expect(data.address2).toEqual("5 - 263 Mogolia, America")
@@ -107,7 +113,7 @@ describe('Fuel API', function() {
             .set('x-token', token)
             .send({
                 requestedGallons: 5,
-                deliveryDate: "22/06/2022",
+                deliveryDate: "2022/06/22",
             })
     		
         data = res.body.data;
@@ -115,9 +121,9 @@ describe('Fuel API', function() {
         expect(res.statusCode).toEqual(200)
         expect(data.totalDue).toEqual(50)
         expect(data.requestedGallons).toEqual(5)
-        expect(data.deliveryDate).toEqual("22/06/2022")
+        expect(data.deliveryDate).toEqual("2022-06-21T18:30:00.000Z")
 
-        id = res.body.data.id;
+        id = res.body.data._id;
         
 	});
 
@@ -130,10 +136,10 @@ describe('Fuel API', function() {
 
         quote = res.body.data;
         expect(res.statusCode).toEqual(200);
-        expect(quote.id).toEqual(id);
+        expect(quote._id).toEqual(id);
         expect(quote.requestedGallons).toEqual(5);
         expect(quote.totalDue).toEqual(50);
-        expect(data.deliveryDate).toEqual("22/06/2022")
+        expect(data.deliveryDate).toEqual("2022-06-21T18:30:00.000Z")
 
 	});
 
