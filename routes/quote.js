@@ -1,14 +1,15 @@
+
 const router = require("express").Router();
-const { v4: uuidv4 } = require('uuid');
 const helper = require("../helper");
-let { users } = require("../users");
+const db = require("../db/db");
 
 const suggestedPrice = 10;
 
-router.get("/history", (req, res, next) => {
+router.get("/history", async (req, res, next) => {
     try {
-        const user = users[req.email];
-        helper.sendSuccess(res, user.quotes);
+        const user = await db.User.findOne({email:req.email});
+        quotes = await db.Quote.find({user:user._id});
+        helper.sendSuccess(res, quotes);
     }
     catch (err){
         next(err)
@@ -16,29 +17,25 @@ router.get("/history", (req, res, next) => {
 })
 
 /* istanbul ignore next */
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
-        const user = users[req.email];
         const id = req.query.id;
         if (!id)
             throw { err_message: "Provide an Id", err_code: 401 }
-            
-        if (!(id in user.quotes))
-            throw { err_message: "Quote doesnt exist", err_code: 401 }
 
-        helper.sendSuccess(res, user.quotes[id])
+        quote = await db.Quote.findOne({_id:id});
+        if (!(quote))
+            throw { err_message: "Quote doesnt exist", err_code: 401 }
+        helper.sendSuccess(res, quote)
     } catch (error) {
         next(error)
     }
 })
 
 /* istanbul ignore next */
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
-        console.log(req.body);
-        const user = users[req.email];
-        const id = uuidv4();
-        
+
         let { requestedGallons, deliveryDate } = req.body;
         if (!(requestedGallons && deliveryDate))
             throw { err_message: "Provide required fields", err_code: 401 }
@@ -46,20 +43,20 @@ router.post('/', (req, res, next) => {
         if (typeof requestedGallons !== 'number')
             throw { err_message: "Invalid requested gallons", err_code: 401 }
 
-        deliveryAddress = user.address1
-        totalDue = suggestedPrice * requestedGallons;
+        const user = await db.User.findOne({email:req.email});
+        const profile = await db.Profile.findOne({user:user._id});
+        deliveryAddress = profile.address1;
+        totalDue = suggestedPrice * Number(requestedGallons);
 
-        user.quotes = {}
-        user.quotes[id] = {
-            id,
+        quote = await db.Quote.create({
+            user:user._id,
             requestedGallons,
             deliveryAddress,
             deliveryDate,
             suggestedPrice,
             totalDue,
-        }
-
-        helper.sendSuccess(res, user.quotes[id])
+        });
+        helper.sendSuccess(res, quote)
 
     } catch (error) {
         next(error)
