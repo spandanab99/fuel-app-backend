@@ -2,18 +2,23 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const helper = require("../helper");
-const { users } = require("../users");
+const db = require("../db/db");
 
 /* istanbul ignore next */
 router.post("/register", async (req, res, next) => {
     try {
         var { email, password } = req.body;
-        user = users[email];
+        // user = users[email];
+        user = await db.User.findOne({email:email});
         if (user)
             throw { err_message: "User account already exists with this Email", err_code: 406 };
         const salt = await bcrypt.genSalt(10);
         password = await bcrypt.hash(password, salt);
-        users[email]={email:email,password:password}
+        // users[email]={email:email,password:password}
+        await db.User.create({
+            email:email,
+            password:password,
+        })
         helper.sendSuccess(res,"Registered Successfully");
     }
 
@@ -28,7 +33,8 @@ router.post("/login", async (req, res, next) => {
         const { email, password } = req.body;
         if (!(email, password))
             throw { err_message: "Missing some required fields", err_code: 404 }
-        user = users[email];
+        // user = users[email];
+        user = await db.User.findOne({email:email});
         if (!user)
             throw { err_message: "User with this email not exists", err_code: 406 };
         const validPassword = await bcrypt.compare(password, user.password);
