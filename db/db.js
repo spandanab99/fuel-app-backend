@@ -17,7 +17,7 @@ connectToDb();
 module.exports = {
     mongoose: mongoose,
     User: require("./db-models/user"),
-    // Quote: require("./db-models/quote"),
+    Quote: require("./db-models/quote"),
     Profile:require("./db-models/profile"),
     connectToDb: connectToDb,
 };
