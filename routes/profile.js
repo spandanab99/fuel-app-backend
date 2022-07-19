@@ -1,11 +1,14 @@
 const router = require("express").Router();
 const helper = require("../helper");
-let { users } = require("../users");
+const db = require("../db/db");
 
-router.get('/', (req, res, next) => {
-    const user = users[req.email];
+
+
+router.get('/', async (req, res, next) => {
     try {
-        helper.sendSuccess(res, user)
+        const user = await db.User.findOne({email:req.email});
+        const profile = await db.Profile.findOne({user:user._id});
+        helper.sendSuccess(res, profile);
     }
     catch (err){
         next(err);
@@ -13,7 +16,7 @@ router.get('/', (req, res, next) => {
 })
 
 /* istanbul ignore next */
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
  
         const email = req.email;
@@ -32,17 +35,18 @@ router.post('/', (req, res, next) => {
         if (!(zipcode.match(/(^\d{5}$)|(^\d{5}-\d{4}$)/)))
             throw { err_message: "Invalid zipcode", err_code: 406}
 
-        users[email] = {
-            ...users[email],
+        user = await db.User.findOne({email:email});
+        profile = await db.Profile.create({
+            user:user._id,
             fullName,
             address1,
             address2,
             city,
             state,
             zipcode,
-        }
-
-        helper.sendSuccess(res, users[email]);
+        });
+        
+        helper.sendSuccess(res, profile);
     }
     catch (err){
         next(err);
@@ -50,7 +54,7 @@ router.post('/', (req, res, next) => {
 })
 
 /* istanbul ignore next */
-router.patch('/', (req, res, next) => {
+router.patch('/', async (req, res, next) => {
     try {
         
         const email = req.email;
@@ -62,7 +66,7 @@ router.patch('/', (req, res, next) => {
             state,
             zipcode
         } = req.body;
-        let profile = users[email];
+        let profile = {};
 
         if (fullName)
             profile.fullName = fullName;
@@ -79,6 +83,10 @@ router.patch('/', (req, res, next) => {
                 throw { err_message: "Invalid zipcode", err_code: 406 }
             profile.zipcode = zipcode;
         }
+        user = await db.User.findOne({email:email});
+        await db.Profile.findOneAndUpdate({user:user._id},profile);
+        profile = await db.Profile.findOne({user:user._id})
+       
         helper.sendSuccess(res, profile)
     }
     catch (err){
