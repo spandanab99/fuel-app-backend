@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const conn_string = "mongodb+srv://Thanoojha:Thanu99@cluster0.hg7wk.mongodb.net/?retryWrites=true&w=majority"
+const conn_string = "mongodb://localhost:27017/fuel_db"
 
 function connectToDb() {
     return mongoose.connect(conn_string, {
