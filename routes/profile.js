@@ -2,12 +2,11 @@ const router = require("express").Router();
 const helper = require("../helper");
 const db = require("../db/db");
 
-
-
 router.get('/', async (req, res, next) => {
     try {
         const user = await db.User.findOne({email:req.email});
         const profile = await db.Profile.findOne({user:user._id});
+        console.log("prifile" + profile)
         helper.sendSuccess(res, profile);
     }
     catch (err){
@@ -36,6 +35,11 @@ router.post('/', async (req, res, next) => {
             throw { err_message: "Invalid zipcode", err_code: 406}
 
         user = await db.User.findOne({email:email});
+        profile = await db.Profile.findOne({user: user._id});
+        console.log(profile)
+        if (profile){
+            throw { err_message: "Profile already exists", err_code: 406}
+        }
         profile = await db.Profile.create({
             user:user._id,
             fullName,
@@ -86,7 +90,6 @@ router.patch('/', async (req, res, next) => {
         user = await db.User.findOne({email:email});
         await db.Profile.findOneAndUpdate({user:user._id},profile);
         profile = await db.Profile.findOne({user:user._id})
-       
         helper.sendSuccess(res, profile)
     }
     catch (err){
