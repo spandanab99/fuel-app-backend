@@ -2,8 +2,9 @@
 const router = require("express").Router();
 const helper = require("../helper");
 const db = require("../db/db");
+const pricingModule = require("../calculate_price");
 
-const suggestedPrice = 10;
+
 
 router.get("/history", async (req, res, next) => {
     try {
@@ -32,6 +33,7 @@ router.get("/", async (req, res, next) => {
     }
 })
 
+
 /* istanbul ignore next */
 router.post('/', async (req, res, next) => {
     try {
@@ -46,7 +48,11 @@ router.post('/', async (req, res, next) => {
         const user = await db.User.findOne({email:req.email});
         const profile = await db.Profile.findOne({user:user._id});
         deliveryAddress = profile.address1;
-        totalDue = suggestedPrice * Number(requestedGallons);
+        if(!profile.state)
+            throw { err_message: "Please update your state in Profile page", err_code: 401 }
+        const totalQuotes = await db.Quote.find({user:user._id}).countDocuments(); 
+        const {suggestedPrice,totalDue}= pricingModule.calculatePrice(Number(requestedGallons),profile.state,totalQuotes);
+
 
         quote = await db.Quote.create({
             user:user._id,
@@ -61,6 +67,27 @@ router.post('/', async (req, res, next) => {
     } catch (error) {
         next(error)
     }
+})
+
+
+router.post('/get-quote',async (req,res,next)=>{
+    try{
+        const { requestedGallons } = req.body;
+        if(!requestedGallons)
+            throw { err_message: "Provide required fields", err_code: 401 }
+        const user = await db.User.findOne({email:req.email});
+        const profile = await db.Profile.findOne({user:user._id});
+        if(!profile.state)
+            throw { err_message: "Please update your state in Profile page", err_code: 401 }
+        const totalQuotes = await db.Quote.find({user:user._id}).countDocuments();
+
+        const data= pricingModule.calculatePrice(requestedGallons,profile.state,totalQuotes);
+        helper.sendSuccess(res,data);
+    }
+    catch(err){
+        next(err);
+    }
+
 })
 
 module.exports = router;
