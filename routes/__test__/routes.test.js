@@ -121,7 +121,7 @@ describe('Fuel API', function() {
         expect(res.statusCode).toEqual(200)
         expect(data.totalDue).toEqual(8.774999999999999)
         expect(data.requestedGallons).toEqual(5)
-        expect(data.deliveryDate).toEqual("2022-06-21T18:30:00.000Z")
+
 
         id = res.body.data._id;
         
@@ -139,7 +139,6 @@ describe('Fuel API', function() {
         expect(quote._id).toEqual(id);
         expect(quote.requestedGallons).toEqual(5);
         expect(quote.totalDue).toEqual(8.774999999999999);
-        expect(data.deliveryDate).toEqual("2022-06-21T18:30:00.000Z")
 
 	});
 
